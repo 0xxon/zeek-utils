@@ -1,0 +1,23 @@
+readToPsql.pl:
+
+	Read Bro log file into a postgresql database. The name of the database has to
+	be set in the script. Table is automatically generated according to the path
+	value of the Bro log file.
+
+	Usage: readToPsql.pl [logfile].
+
+	Only use with one file at a time. To use with multiple files do
+
+	find ./ -name "conn*.log" -print0 | xarg -0 -n1 readToPsql.pl
+
+	or similar.
+
+
+readToPsqlMassInserts.pl:
+
+	Same as readToPsql.pl - it just uses regular inserts instead of COPIES. Might
+	work better in a few special cases - but usually should not be used, because
+	it is much, much slower.
+
+readToInfobright.pl: 
+	Very rough Infobright loader. Has hardcoded paths in it (search for /xc)
