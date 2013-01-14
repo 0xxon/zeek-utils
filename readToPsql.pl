@@ -77,6 +77,7 @@ chomp($path);
 assert($path =~ s/#path\s//);
 
 my $fields_string = <>;
+$fields_string = <> if ($fields_string =~ m/^#open\s.*/);
 chomp($fields_string);
 assert($fields_string =~ s/#fields\s//);
 
@@ -129,6 +130,7 @@ $dbh->do($insert);
 
 while ( my $line = <> ) {
 	chomp($line);
+	next if ( $line =~ m/^#close\s.*/ );
 
 
 	my @values = split('\t', $line);
