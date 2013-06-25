@@ -12,7 +12,7 @@ use DBD::Pg qw/:pg_types/;
 use Carp::Assert;
 use Data::Dumper;
 
-my $connectString = "dbi:Pg:dbname=intnet";
+my $connectString = "dbi:Pg:dbname=ssf;port=7779";
 
 my $dbh = DBI->connect($connectString, "", "", {
 	RaiseError => 1,
@@ -93,6 +93,7 @@ my %f;
 @f{@fields} = @types;
 
 
+
 # -------------------------------- Step 2 - create table
 
 my $create = "CREATE TABLE IF NOT EXISTS $path (\n";
@@ -131,11 +132,12 @@ $dbh->do($insert);
 while ( my $line = <> ) {
 	chomp($line);
 	next if ( $line =~ m/^#close\s.*/ );
-
+	next if ( $line =~ m/^#.*\s.*/ );
 
 	my @values = split('\t', $line);
 	if ( scalar @values != $neednum ) {
 		say "Column with wrong number of entries";
+		say $line;
 		last;
 	}
 	#say Dumper(\@values);
