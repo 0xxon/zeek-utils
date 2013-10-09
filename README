@@ -12,12 +12,5 @@ readToPsql.pl:
 
 	or similar.
 
-
-readToPsqlMassInserts.pl:
-
-	Same as readToPsql.pl - it just uses regular inserts instead of COPIES. Might
-	work better in a few special cases - but usually should not be used, because
-	it is much, much slower.
-
 readToInfobright.pl: 
 	Very rough Infobright loader. Has hardcoded paths in it (search for /xc)
