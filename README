@@ -4,13 +4,7 @@ readToPsql.pl:
 	be set in the script. Table is automatically generated according to the path
 	value of the Bro log file.
 
-	Usage: readToPsql.pl [logfile].
-
-	Only use with one file at a time. To use with multiple files do
-
-	find ./ -name "conn*.log" -print0 | xarg -0 -n1 readToPsql.pl
-
-	or similar.
+	Usage: readToPsql.pl --db=[dbname] [--port=port] [logfiles]
 
 readToInfobright.pl: 
 	Very rough Infobright loader. Has hardcoded paths in it (search for /xc)
