@@ -1,8 +1,8 @@
 readToPsql.pl:
 
-	Read Bro log file into a postgresql database. The name of the database has to
-	be set in the script. Table is automatically generated according to the path
-	value of the Bro log file.
+	Read Bro log files into a postgresql database. Tables are 
+        automatically generated according to the type and path
+        values in the Bro logs.
 
 	Usage: readToPsql.pl --db=[dbname] [--port=port] [logfiles]
 
