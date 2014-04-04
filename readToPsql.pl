@@ -29,11 +29,11 @@ GetOptions(
 unless (defined($dbname)) {
 	say STDERR "Please specify db name with --db=[name]";
 	say STDERR "Options:";
-	say "--db [database name] (mandantory)";
-	say "--host [hostname]";
-	say "--port [database port]";
-	say "--username [username]";
-	say "--password [password]";
+	say STDERR "--db [database name] (mandantory)";
+	say STDERR "--host [hostname]";
+	say STDERR "--port [database port]";
+	say STDERR "--username [username]";
+	say STDERR "--password [password]";
 	exit(-1);
 }
 
