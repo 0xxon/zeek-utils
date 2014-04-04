@@ -14,16 +14,34 @@ use Data::Dumper;
 
 my $dbname;
 my $port;
+my $username;
+my $password;
+my $host;
 
 GetOptions(
 	"db=s" => \$dbname,
 	"port=i" => \$port,
+	"username=s" => \$username,
+	"password=s" => \$password,
+	"host=s" => \$host,
 );
 
-die("Please specify db name with --db=[name]") unless defined($dbname);
+unless (defined($dbname)) {
+	say STDERR "Please specify db name with --db=[name]";
+	say STDERR "Options:";
+	say "--db [database name] (mandantory)";
+	say "--host [hostname]";
+	say "--port [database port]";
+	say "--username [username]";
+	say "--password [password]";
+	exit(-1);
+}
 
 my $connectString = "dbi:Pg:dbname=$dbname";
 $connectString .= ";port=$port" if defined($port);
+$connectString .= ";username=$port" if defined($username);
+$connectString .= ";password=$port" if defined($password);
+$connectString .= ";host=$port" if defined($host);
 
 my $dbh = DBI->connect($connectString, "", "", {
 	RaiseError => 1,
@@ -53,26 +71,26 @@ for my $file ( @ARGV ) {
 	next if ( -s $file == 0 );
 
 	# black magic from the internet... make all .gz and .bz2 arguments go through gzcat.
-	$file =~ s{ 
+	$file =~ s{
 	    ^            # make sure to get whole filename
-	    ( 
+	    (
 	      [^'] +     # at least one non-quote
 	      \.         # extension dot
 	      (?:        # now either suffix
 		  gz
-		| Z 
+		| Z
 	       )
 	    )
 	    \z           # through the end
 	}{zcat '$1' |}xs;
 
-	$file =~ s{ 
+	$file =~ s{
 	    ^            # make sure to get whole filename
-	    ( 
+	    (
 	      [^'] +     # at least one non-quote
 	      \.         # extension dot
 	      (?:        # now either suffix
-		  bz2 
+		  bz2
 	       )
 	    )
 	    \z           # through the end
@@ -119,12 +137,12 @@ for my $file ( @ARGV ) {
 		$field =~ tr/./_/; # manipulation is SAVED TO ARRAY! which we want.
 		$field = 'from_addr' if $field eq 'from';
 		$field = 'to_addr' if $field eq 'to';
-		
+
 
 		$create .= ",\n";
 		$create .= "$field ";
 
-		if ( $type =~ s#^(table|vector)\[(.*)\]#$2# ) {
+		if ( $type =~ s#^(table|vector|set)\[(.*)\]#$2# ) {
 			carp("internal error") unless(defined($typemap{$type}));
 			$create .= $typemap{$type}."[]";
 		} else {
@@ -141,7 +159,7 @@ for my $file ( @ARGV ) {
 	my $neednum = scalar @fields;
 
 
-	# -------------------------------- Step 2 - build copy statement 
+	# -------------------------------- Step 2 - build copy statement
 
 	my $insert = "copy $path (".join(',', @fields).") FROM STDIN;";
 	$dbh->do($insert);
@@ -165,8 +183,8 @@ for my $file ( @ARGV ) {
 		for my $val (@values) {
 			$val = $dbh->quote($val);
 			$val = substr($val, 1, -1);
-			if ( $val eq "-" ) { 
-				push(@out, '\N'); 
+			if ( $val eq "-" ) {
+				push(@out, '\N');
 			} elsif ( $val eq "(empty)" ) {
 				push(@out, '{}');
 			} else {
@@ -180,7 +198,7 @@ for my $file ( @ARGV ) {
 					push(@out, $val);
 				}
 
-			} 
+			}
 			$pos++;
 		}
 
