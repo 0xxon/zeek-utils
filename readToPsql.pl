@@ -9,6 +9,7 @@ use warnings;
 use DBI;
 use DBD::Pg qw/:pg_types/;
 use Getopt::Long;
+use Carp;
 
 use Data::Dumper;
 
@@ -82,26 +83,33 @@ for my $file ( @ARGV ) {
 
 	# -------------------------------- Step 1 - parse header lines
 
-	for ( 1..4 ) {
-		# throw away unneeded header lines
-		<$fh>;
+
+	my $fields_string;
+	my $types_string;
+	my $path;
+	# this only works if the last header line is #types...
+	while ( my $headerline = <$fh> ) {
+		chomp($headerline);
+		croak("Unexpected non-headerline: $headerline") unless ($headerline =~ m/^#/);
+		if ($headerline =~ s/^#path\s//) {
+			$path = $headerline;
+			next;
+		}
+		if ($headerline =~ s/^#fields\s//) {
+			$fields_string = $headerline;
+			next;
+		}
+		if ($headerline =~ s/^#types\s//) {
+			$types_string = $headerline;
+			last;
+		}
 	}
 
-	my $path = <$fh>;
-	chomp($path);
-	croak("Problem parsing header - #path") unless($path =~ s/#path\s//);
-
-	my $fields_string = <$fh>;
-	$fields_string = <$fh> if ($fields_string =~ m/^#open\s.*/);
-	chomp($fields_string);
-	croak("Problem parsing header - #fields") unless ($fields_string =~ s/#fields\s//);
+	croak("No #types line") unless defined($types_string);
+	croak("No #fields line") unless defined($fields_string);
+	croak("No #path line") unless defined($path);
 
 	my @fields = split(/\s/, $fields_string);
-
-	my $types_string = <$fh>;
-	chomp($types_string);
-	croak("Problem parsing header - #types") unless ($types_string =~ s/#types\s//);
-
 	my @types = split(/\s/, $types_string);
 
 	my %f;
