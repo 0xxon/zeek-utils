@@ -1,0 +1,14 @@
+=head1 Bro utilities
+
+This repository contains a few utility scripts for the
+L<Bro Network Security Monitor|http://www.bro.org>.
+
+=head2 readToPsql.pl
+
+Read Bro log files into a postgresql database. Tables are
+automatically generated according to the type and path
+values in the Bro logs.
+
+Usage:
+
+	readToPsql.pl --db=[dbname] [--port=port] [logfiles]
