@@ -5,6 +5,3 @@ readToPsql.pl:
         values in the Bro logs.
 
 	Usage: readToPsql.pl --db=[dbname] [--port=port] [logfiles]
-
-readToInfobright.pl: 
-	Very rough Infobright loader. Has hardcoded paths in it (search for /xc)
