@@ -12,3 +12,12 @@ values in the Bro logs.
 Usage:
 
 	readToPsql.pl --db=[dbname] [--port=port] [logfiles]
+
+=head2 convert-blacklist.pl
+
+Convert the SSL blacklist provided by L<abuse.ch|https://sslbl.abuse.ch/blacklist/>
+to a format that is ingestible by the Bro Intelligence Framework.
+
+Usage:
+
+	convert-blacklist.pl infile > outfile
