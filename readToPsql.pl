@@ -18,6 +18,10 @@ my $port;
 my $username;
 my $password;
 my $host;
+my $tablename;
+my $createstatement = 0;
+my $nocreate = 0;
+my $copystatement;
 
 GetOptions(
 	"db=s" => \$dbname,
@@ -25,6 +29,10 @@ GetOptions(
 	"username=s" => \$username,
 	"password=s" => \$password,
 	"host=s" => \$host,
+	"tablename=s" => \$tablename,
+	"createstatement" => \$createstatement,
+	"nocreate" => \$nocreate,
+	"copystatement=s" => \$copystatement # expert option - provide own copy statement
 );
 
 unless (defined($dbname)) {
@@ -35,6 +43,9 @@ unless (defined($dbname)) {
 	say STDERR "--port [database port]";
 	say STDERR "--username [username]";
 	say STDERR "--password [password]";
+	say STDERR "--tablename [table name]";
+	say STDERR "--createstatement (only shows create table statement)";
+	say STDERR "--nocreate (do not emit create table statement)";
 	exit(-1);
 }
 
@@ -127,6 +138,8 @@ for my $file ( @ARGV ) {
 	croak("No #fields line") unless defined($fields_string);
 	croak("No #path line") unless defined($path);
 
+	$path = $tablename if ( defined($tablename) );
+
 	my @fields = split(/\s/, $fields_string);
 	my @types = split(/\s/, $types_string);
 
@@ -160,9 +173,12 @@ for my $file ( @ARGV ) {
 	}
 	$create .= "\n);";
 
-	#say $create;
+	if ( $createstatement ) {
+		say $create;
+		exit(0);
+	}
 
-	$dbh->do($create);
+	$dbh->do($create) unless ( $nocreate );
 
 	my $neednum = scalar @fields;
 
@@ -170,6 +186,7 @@ for my $file ( @ARGV ) {
 	# -------------------------------- Step 2 - build copy statement
 
 	my $insert = "copy $path (".join(',', @fields).") FROM STDIN;";
+	$insert = $copystatement if ( defined($copystatement) );
 	$dbh->do($insert);
 
 	while ( my $line = <$fh> ) {
