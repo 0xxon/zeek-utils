@@ -22,6 +22,7 @@ my $tablename;
 my $createstatement = 0;
 my $nocreate = 0;
 my $copystatement;
+my $headerfile;
 
 GetOptions(
 	"db=s" => \$dbname,
@@ -32,7 +33,8 @@ GetOptions(
 	"tablename=s" => \$tablename,
 	"createstatement" => \$createstatement,
 	"nocreate" => \$nocreate,
-	"copystatement=s" => \$copystatement # expert option - provide own copy statement
+	"copystatement=s" => \$copystatement, # expert option - provide own copy statement
+	"headerfile=s" => \$headerfile # expert option - read header from different file
 );
 
 unless (defined($dbname)) {
@@ -109,6 +111,11 @@ for my $file ( @ARGV ) {
 	}{bzcat '$1' |}xs;
 
 	open(my $fh, $file);
+	my $headerfh;
+	if ( defined($headerfile) ) {
+		open($headerfh, "<", $headerfile);
+	}
+	$headerfh //= $fh;
 
 	# -------------------------------- Step 1 - parse header lines
 
@@ -117,7 +124,7 @@ for my $file ( @ARGV ) {
 	my $types_string;
 	my $path;
 	# this only works if the last header line is #types...
-	while ( my $headerline = <$fh> ) {
+	while ( my $headerline = <$headerfh> ) {
 		chomp($headerline);
 		croak("Unexpected non-headerline: $headerline") unless ($headerline =~ m/^#/);
 		if ($headerline =~ s/^#path\s//) {
