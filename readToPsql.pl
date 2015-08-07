@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 
-# Questions -> johanna@icir.org
+# Questions, comments -> johanna@icir.org
 
 use 5.10.1;
 use strict;
 use warnings;
+use autodie;
 
 use DBI;
 use DBD::Pg qw/:pg_types/;
@@ -23,6 +24,7 @@ my $createstatement = 0;
 my $nocreate = 0;
 my $copystatement;
 my $headerfile;
+my $outfile;
 
 GetOptions(
 	"db=s" => \$dbname,
@@ -34,21 +36,29 @@ GetOptions(
 	"createstatement" => \$createstatement,
 	"nocreate" => \$nocreate,
 	"copystatement=s" => \$copystatement, # expert option - provide own copy statement
-	"headerfile=s" => \$headerfile # expert option - read header from different file
+	"headerfile=s" => \$headerfile, # expert option - read header from different file
+	"outfile=s" => \$outfile
 );
 
 unless (defined($dbname)) {
 	say STDERR "Please specify db name with --db=[name]";
 	say STDERR "Options:";
-	say STDERR "--db [database name] (mandantory)";
-	say STDERR "--host [hostname]";
-	say STDERR "--port [database port]";
-	say STDERR "--username [username]";
-	say STDERR "--password [password]";
-	say STDERR "--tablename [table name]";
+	say STDERR "--db=[database name] (mandantory)";
+	say STDERR "--host=[hostname]";
+	say STDERR "--port=[database port]";
+	say STDERR "--username=[username]";
+	say STDERR "--password=[password]";
+	say STDERR "--tablename=[table name]";
 	say STDERR "--createstatement (only shows create table statement)";
 	say STDERR "--nocreate (do not emit create table statement)";
+	say STDERR "--outfile=[filename] (dump to file instead of db, implies nocreate. Still needs db connection.)";
 	exit(-1);
+}
+
+my $outfh;
+if ( defined($outfile) ) {
+	$nocreate = 1;
+	open($outfh, ">", $outfile);
 }
 
 my $connectString = "dbi:Pg:dbname=$dbname";
@@ -194,7 +204,7 @@ for my $file ( @ARGV ) {
 
 	my $insert = "copy $path (".join(',', @fields).") FROM STDIN;";
 	$insert = $copystatement if ( defined($copystatement) );
-	$dbh->do($insert);
+	$dbh->do($insert) unless(defined($outfile));
 
 	while ( my $line = <$fh> ) {
 		chomp($line);
@@ -236,11 +246,13 @@ for my $file ( @ARGV ) {
 
 		#say Dumper(\@out);
 
-		$dbh->pg_putcopydata(join("\t", @out)."\n");
+		$dbh->pg_putcopydata(join("\t", @out)."\n") unless(defined($outfile));
+		say $outfh join("\t", @out) if (defined($outfile));
 	}
 
 	close($fh);
+	close($outfh) if (defined($outfile));
 
-	$dbh->pg_putcopyend();
+	$dbh->pg_putcopyend() unless(defined($outfile));
 
 }
