@@ -234,7 +234,7 @@ for my $file ( @ARGV ) {
 					$val =~ s/"/\\\\\"/g;
 					#die ($val) if $val =~ m#"#;
 					my @parts = split(',', $val);
-					my @parts2 = map { '{"'.$_.'"}' } @parts;
+					my @parts2 = map { '"'.$_.'"' } @parts;
 					push(@out, '{'.join(',', @parts2).'}');
 				} else {
 					push(@out, $val);
