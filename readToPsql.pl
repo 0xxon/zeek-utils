@@ -63,9 +63,9 @@ if ( defined($outfile) ) {
 
 my $connectString = "dbi:Pg:dbname=$dbname";
 $connectString .= ";port=$port" if defined($port);
-$connectString .= ";username=$port" if defined($username);
-$connectString .= ";password=$port" if defined($password);
-$connectString .= ";host=$port" if defined($host);
+$connectString .= ";username=$username" if defined($username);
+$connectString .= ";password=$password" if defined($password);
+$connectString .= ";host=$host" if defined($host);
 
 my $dbh = DBI->connect($connectString, "", "", {
 	RaiseError => 1,
