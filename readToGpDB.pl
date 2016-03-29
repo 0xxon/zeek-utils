@@ -63,7 +63,7 @@ if ( defined($outfile) ) {
 
 my $connectString = "dbi:Pg:dbname=$dbname";
 $connectString .= ";port=$port" if defined($port);
-$connectString .= ";username=$username" if defined($username);
+$connectString .= ";user=$username" if defined($username);
 $connectString .= ";password=$password" if defined($password);
 $connectString .= ";host=$host" if defined($host);
 
