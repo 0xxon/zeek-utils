@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 # Convert abuse.ch SSL Fingerprint Blacklist in CVS format to format ingestible by
-# the Bro intelligence framework.
+# the Zeek intelligence framework.
 #
-# Get the blacklist at https://sslbl.abuse.ch/blacklist/, get bro at https://bro.org
+# Get the blacklist at https://sslbl.abuse.ch/blacklist/, get Zeek at https://www.zeek.org
 #
 # Usage:
 # ./convert-blacklist.pl infile > outfile

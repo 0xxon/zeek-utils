@@ -1,13 +1,13 @@
-=head1 Bro utilities
+=head1 Zeek utilities
 
 This repository contains a few utility scripts for the
-L<Bro Network Security Monitor|http://www.bro.org>.
+L<Zeek Network Security Monitor|http://www.zeek.org>.
 
 =head2 readToPsql.pl
 
-Read Bro log files into a postgresql database. Tables are
+Read Zeek log files into a postgresql database. Tables are
 automatically generated according to the type and path
-values in the Bro logs.
+values in the Zeek logs.
 
 Usage:
 
@@ -15,9 +15,9 @@ Usage:
 
 =head2 readToGpDB.pl
 
-Read Bro log files into a greenplum database. Tables are
+Read Zeek log files into a greenplum database. Tables are
 automatically generated according to the type and path
-values in the Bro logs.
+values in the Zeek logs.
 
 Usage:
 
@@ -26,7 +26,7 @@ Usage:
 =head2 convert-blacklist.pl
 
 Convert the SSL blacklist provided by L<abuse.ch|https://sslbl.abuse.ch/blacklist/>
-to a format that is ingestible by the Bro Intelligence Framework.
+to a format that is ingestible by the Zeek Intelligence Framework.
 
 Usage:
 
